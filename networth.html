@@ -12,12 +12,10 @@
         body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; padding-top: 64px; }
         .apple-card { backdrop-filter: saturate(180%) blur(20px); border-radius: 24px; transition: all 0.3s ease; }
         
-        /* Glassmorphism Navigation */
         .apple-nav {
             position: fixed; top: 0; left: 0; right: 0; height: 50px;
-            backdrop-filter: saturate(180%) blur(20px);
-            z-index: 1000; display: flex; align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            backdrop-filter: saturate(180%) blur(20px); z-index: 1000;
+            display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .light .apple-nav { background: rgba(255, 255, 255, 0.75); }
         .dark .apple-nav { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -25,20 +23,36 @@
         .nav-link { font-size: 12px; font-weight: 500; color: #1d1d1f; opacity: 0.8; transition: all 0.2s; }
         .dark .nav-link { color: #f5f5f7; }
         .nav-link:hover { opacity: 1; color: #0071e3; }
-        .dark .nav-link:hover { color: #0a84ff; }
 
         .light body { background-color: #fbfbfd; color: #1d1d1f; }
         .light .apple-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0,0,0,0.05); }
         .dark body { background-color: #000000; color: #f5f5f7; }
         .dark .apple-card { background: rgba(28, 28, 30, 0.8); border: 1px solid rgba(255,255,255,0.1); }
         
+        input[type="number"] { transition: all 0.2s ease; border: 1px solid transparent; }
+        .light input[type="number"] { background-color: #f2f2f7; color: #1d1d1f; }
+        .dark input[type="number"] { 
+            background-color: #1c1c1e; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: #ffffff; 
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #0071e3;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+        }
+        .dark input[type="number"]:focus {
+            background-color: #2c2c2e !important;
+            border-color: #0a84ff;
+            box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+        }
+
         .currency-btn, .freq-btn, .stock-btn { transition: all 0.2s ease; color: #86868b; }
         .light .active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); color: #0071e3 !important; }
         .dark .active { background: #3a3a3c; color: #0a84ff !important; }
         
         input[type="range"] { accent-color: #0071e3; cursor: pointer; }
-        .freedom-badge-unified { border-left: 4px solid #0071e3; }
-        .dark .freedom-badge-unified { border-left-color: #0a84ff; }
     </style>
 </head>
 <body class="p-4 md:p-12">
@@ -46,10 +60,10 @@
     <nav class="apple-nav">
         <div class="max-w-6xl mx-auto w-full px-6 flex justify-between items-center">
             <div class="flex items-center gap-10">
-                <span class="text-sm font-bold tracking-tight cursor-default">RhapsInc.</span>
+                <span class="text-sm font-bold tracking-tight cursor-default">WC.</span>
                 <div class="flex gap-8">
                     <a href="index.html" class="nav-link uppercase tracking-tighter">Home</a>
-                    <a href="networth.html" class="nav-link uppercase tracking-tighter">Networth Projector</a>
+                    <a href="networth.html" class="nav-link uppercase tracking-tighter active text-blue-500">Networth Projector</a>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -78,7 +92,7 @@
                 <div class="apple-card p-8 space-y-6">
                     <div>
                         <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Initial Balance</label>
-                        <input type="number" id="initial" value="10000" class="w-full bg-gray-100 dark:bg-zinc-900 rounded-2xl p-4 text-lg font-bold outline-none border border-transparent focus:border-blue-500 transition-all" oninput="calculate()">
+                        <input type="number" id="initial" value="10000" class="w-full rounded-2xl p-4 text-lg font-bold outline-none" oninput="calculate()">
                     </div>
 
                     <div class="space-y-4">
@@ -89,7 +103,7 @@
                                 <button onclick="updateFreq('yearly', this)" class="freq-btn px-3 py-1 rounded-md text-[10px] font-bold">Yearly</button>
                             </div>
                         </div>
-                        <input type="number" id="contribution" value="1000" class="w-full bg-gray-100 dark:bg-zinc-900 rounded-2xl p-4 text-lg font-bold outline-none border border-transparent focus:border-blue-500 transition-all" oninput="calculate()">
+                        <input type="number" id="contribution" value="1000" class="w-full rounded-2xl p-4 text-lg font-bold outline-none" oninput="calculate()">
                     </div>
 
                     <div class="pt-2">
@@ -110,7 +124,7 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-black uppercase tracking-widest text-blue-500">Monthly Passive Goal</label>
-                            <input type="number" id="incomeGoal" value="2500" class="w-full bg-blue-50/30 dark:bg-blue-900/10 rounded-xl p-3 text-sm font-bold outline-none" oninput="calculate()">
+                            <input type="number" id="incomeGoal" value="2500" class="w-full rounded-xl p-3 text-sm font-bold outline-none" oninput="calculate()">
                         </div>
                     </div>
 
@@ -135,18 +149,18 @@
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ending Balance</span>
                         <div id="totalDisplay" class="text-5xl font-bold tracking-tighter mt-1">£0</div>
                     </div>
-                    <div class="apple-card p-8 freedom-badge-unified">
+                    <div class="apple-card p-8">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Freedom Year</span>
                         <div id="freedomStatus" class="text-3xl font-bold tracking-tight mt-1">--</div>
                     </div>
                 </div>
 
                 <div id="dividendDisplay" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="apple-card p-6 border-l-4 border-blue-500">
+                    <div class="apple-card p-8">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Annual Dividends</span>
                         <div id="finalDiv" class="text-3xl font-bold mt-1">£0</div>
                     </div>
-                    <div class="apple-card p-6 border-l-4 border-emerald-500">
+                    <div class="apple-card p-8">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Passive</span>
                         <div id="monthlyDiv" class="text-3xl font-bold mt-1">£0</div>
                     </div>
@@ -159,18 +173,41 @@
         </div>
     </div>
 
+
+    <footer class="py-12 text-center">
+        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">© 2026 RhapsInc.</p>
+    </footer>
+
     <script>
-        // ... (Same verified math logic as previous response) ...
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.getElementById('themeIcon').innerText = '☀️';
+            }
+            calculate();
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            icon.innerText = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            calculate(); 
+        }
+
         let chart;
         let symbol = '£';
         let frequency = 'monthly';
         let isStockMode = false;
-
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            document.getElementById('themeIcon').innerText = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
-            calculate();
-        }
 
         function updateCurrency(code, s, btn) {
             symbol = s;
@@ -267,12 +304,6 @@
                 }
             });
         }
-        calculate();
     </script>
-
-    <footer class="py-12 text-center">
-        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">© 2026 RhapsInc.</p>
-    </footer>
-    
 </body>
 </html>

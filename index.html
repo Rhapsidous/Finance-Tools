@@ -8,9 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <script>tailwind.config = { darkMode: 'class' }</script>
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; padding-top: 50px; }
         
-        /* Fixed Apple Nav */
+        /* Fixed Apple Nav - Unified */
         .apple-nav {
             position: fixed; top: 0; left: 0; right: 0; height: 50px;
             backdrop-filter: saturate(180%) blur(20px); z-index: 1000;
@@ -46,11 +46,16 @@
     <nav class="apple-nav">
         <div class="max-w-6xl mx-auto w-full px-6 flex justify-between items-center">
             <div class="flex items-center gap-10">
-                <span class="text-sm font-bold tracking-tight cursor-default">RhapsInc.</span>
+                <span class="text-sm font-bold tracking-tight cursor-default">WC.</span>
                 <div class="flex gap-8">
                     <a href="index.html" class="nav-link uppercase tracking-tighter active-link">Home</a>
                     <a href="networth.html" class="nav-link uppercase tracking-tighter">Networth Projector</a>
                 </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="p-2 opacity-70 hover:opacity-100 transition-opacity">
+                    <span id="themeIcon" class="text-xs">🌙</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -71,5 +76,25 @@
         <p class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">© 2026 RhapsInc.</p>
     </footer>
 
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            html.classList.toggle('dark');
+            icon.innerText = html.classList.contains('dark') ? '☀️' : '🌙';
+            
+            // Optional: Save preference to localStorage so it persists across pages
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Apply saved theme on load
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').innerText = '☀️';
+            }
+        })();
+    </script>
 </body>
 </html>
