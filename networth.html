@@ -9,7 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script>tailwind.config = { darkMode: 'class' }</script>
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; padding-top: 64px; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; }
+        
+        /* Mobile-first Padding: 70px on small screens, 100px on desktop */
+        .content-wrapper { padding-top: 80px; }
+        @media (min-width: 768px) { .content-wrapper { padding-top: 100px; } }
+
         .apple-card { backdrop-filter: saturate(180%) blur(20px); border-radius: 24px; transition: all 0.3s ease; }
         
         .apple-nav {
@@ -20,7 +25,7 @@
         .light .apple-nav { background: rgba(255, 255, 255, 0.75); }
         .dark .apple-nav { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.1); }
 
-        .nav-link { font-size: 12px; font-weight: 500; color: #1d1d1f; opacity: 0.8; transition: all 0.2s; }
+        .nav-link { font-size: 11px; font-weight: 500; color: #1d1d1f; opacity: 0.8; transition: all 0.2s; }
         .dark .nav-link { color: #f5f5f7; }
         .nav-link:hover { opacity: 1; color: #0071e3; }
 
@@ -29,7 +34,7 @@
         .dark body { background-color: #000000; color: #f5f5f7; }
         .dark .apple-card { background: rgba(28, 28, 30, 0.8); border: 1px solid rgba(255,255,255,0.1); }
         
-        input[type="number"] { transition: all 0.2s ease; border: 1px solid transparent; }
+        input[type="number"] { transition: all 0.2s ease; border: 1px solid transparent; -webkit-appearance: none; }
         .light input[type="number"] { background-color: #f2f2f7; color: #1d1d1f; }
         .dark input[type="number"] { 
             background-color: #1c1c1e; 
@@ -53,20 +58,24 @@
         .dark .active { background: #3a3a3c; color: #0a84ff !important; }
         
         input[type="range"] { accent-color: #0071e3; cursor: pointer; }
+
+        /* Chart height optimization for mobile */
+        .chart-container { height: 300px; }
+        @media (min-width: 768px) { .chart-container { height: 450px; } }
     </style>
 </head>
-<body class="p-4 md:p-12">
+<body class="px-4 pb-12 md:px-12">
 
     <nav class="apple-nav">
-        <div class="max-w-6xl mx-auto w-full px-6 flex justify-between items-center">
-            <div class="flex items-center gap-10">
+        <div class="max-w-6xl mx-auto w-full px-4 md:px-6 flex justify-between items-center">
+            <div class="flex items-center gap-4 md:gap-10">
                 <span class="text-sm font-bold tracking-tight cursor-default">RhapsInc.</span>
-                <div class="flex gap-8">
+                <div class="flex gap-4 md:gap-8">
                     <a href="index.html" class="nav-link uppercase tracking-tighter">Home</a>
-                    <a href="networth.html" class="nav-link uppercase tracking-tighter active text-blue-500">Networth Projector</a>
+                    <a href="networth.html" class="nav-link uppercase tracking-tighter active text-blue-500">Projector</a>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
                 <button onclick="toggleTheme()" class="p-2 opacity-70 hover:opacity-100 transition-opacity">
                     <span id="themeIcon" class="text-xs">🌙</span>
                 </button>
@@ -74,22 +83,22 @@
         </div>
     </nav>
 
-    <div class="max-w-6xl mx-auto space-y-10 mt-4">
-        <header class="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="space-y-1 text-center md:text-left">
-                <h1 class="text-4xl font-extrabold tracking-tight">Networth Projector.</h1>
-                <p class="text-gray-500 font-medium tracking-tight">Financial Modeling Suite</p>
+    <div class="max-w-6xl mx-auto content-wrapper space-y-8 md:space-y-10">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="space-y-1">
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Networth Projector.</h1>
+                <p class="text-gray-500 text-sm md:text-base font-medium tracking-tight">Financial Modeling Suite</p>
             </div>
             
-            <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-xl flex gap-1 scale-90">
+            <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-xl flex gap-1 self-start md:self-auto scale-90 md:scale-100">
                 <button onclick="updateCurrency('GBP', '£', this)" class="currency-btn active px-4 py-1.5 rounded-lg text-[10px] font-black">GBP</button>
                 <button onclick="updateCurrency('USD', '$', this)" class="currency-btn px-4 py-1.5 rounded-lg text-[10px] font-black">USD</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
             <div class="lg:col-span-4 space-y-6">
-                <div class="apple-card p-8 space-y-6">
+                <div class="apple-card p-6 md:p-8 space-y-6">
                     <div>
                         <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Initial Balance</label>
                         <input type="number" id="initial" value="10000" class="w-full rounded-2xl p-4 text-lg font-bold outline-none" oninput="calculate()">
@@ -108,8 +117,8 @@
 
                     <div class="pt-2">
                         <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-2xl flex gap-1">
-                            <button onclick="toggleStock(false, this)" class="stock-btn active flex-1 py-2 rounded-xl text-xs font-bold uppercase">Index</button>
-                            <button onclick="toggleStock(true, this)" class="stock-btn flex-1 py-2 rounded-xl text-xs font-bold uppercase">Stock</button>
+                            <button onclick="toggleStock(false, this)" class="stock-btn active flex-1 py-2 rounded-xl text-[10px] md:text-xs font-bold uppercase">Index</button>
+                            <button onclick="toggleStock(true, this)" class="stock-btn flex-1 py-2 rounded-xl text-[10px] md:text-xs font-bold uppercase">Stock</button>
                         </div>
                     </div>
 
@@ -119,7 +128,7 @@
                             <input type="range" id="divYield" min="0" max="12" step="0.1" value="3.5" class="w-full" oninput="calculate()">
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-500">Reinvest (DRIP)?</span>
+                            <span class="text-xs font-bold text-gray-500">Reinvest?</span>
                             <input type="checkbox" id="dripToggle" checked class="w-5 h-5 accent-blue-600 rounded-lg" onchange="calculate()">
                         </div>
                         <div>
@@ -144,53 +153,44 @@
             </div>
 
             <div class="lg:col-span-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="apple-card p-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                    <div class="apple-card p-6 md:p-8">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ending Balance</span>
-                        <div id="totalDisplay" class="text-5xl font-bold tracking-tighter mt-1">£0</div>
+                        <div id="totalDisplay" class="text-3xl md:text-5xl font-bold tracking-tighter mt-1">£0</div>
                     </div>
-                    <div class="apple-card p-8">
+                    <div class="apple-card p-6 md:p-8">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Freedom Year</span>
-                        <div id="freedomStatus" class="text-3xl font-bold tracking-tight mt-1">--</div>
+                        <div id="freedomStatus" class="text-2xl md:text-3xl font-bold tracking-tight mt-1">--</div>
                     </div>
                 </div>
 
-                <div id="dividendDisplay" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="apple-card p-8">
+                <div id="dividendDisplay" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                    <div class="apple-card p-6">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Annual Dividends</span>
-                        <div id="finalDiv" class="text-3xl font-bold mt-1">£0</div>
+                        <div id="finalDiv" class="text-2xl font-bold mt-1">£0</div>
                     </div>
-                    <div class="apple-card p-8">
+                    <div class="apple-card p-6">
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Passive</span>
-                        <div id="monthlyDiv" class="text-3xl font-bold mt-1">£0</div>
+                        <div id="monthlyDiv" class="text-2xl font-bold mt-1">£0</div>
                     </div>
                 </div>
 
-                <div class="apple-card p-8 h-[450px]">
+                <div class="apple-card p-4 md:p-8 chart-container">
                     <canvas id="growthChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <footer class="py-12 text-center">
-        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">© 2026 RhapsInc.</p>
-    </footer>
-
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-            }
+            if (savedTheme === 'dark') document.documentElement.classList.add('dark');
         })();
 
         window.onload = function() {
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.getElementById('themeIcon').innerText = '☀️';
-            }
+            if (savedTheme === 'dark') document.getElementById('themeIcon').innerText = '☀️';
             calculate();
         };
 
@@ -264,7 +264,7 @@
                 }
                 lastYearlyDiv = yearlyDivAccumulator;
                 if (isStockMode && (lastYearlyDiv / 12) >= incomeGoal && freedomYear === null) freedomYear = i;
-                labels.push("Year " + i);
+                labels.push(i);
                 data.push(currentBalance.toFixed(0));
                 investedData.push(totalInvested.toFixed(0));
             }
@@ -290,20 +290,25 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Wealth', data: data, borderColor: isDark ? '#0a84ff' : '#0071e3', borderWidth: 3, tension: 0.3, pointRadius: 1, fill: true, backgroundColor: isDark ? 'rgba(10, 132, 255, 0.05)' : 'rgba(0, 113, 227, 0.02)' },
-                        { label: 'Invested', data: investedData, borderColor: isDark ? '#48484a' : '#d2d2d7', borderWidth: 2, borderDash: [5, 5], pointRadius: 0 }
+                        { label: 'Wealth', data: data, borderColor: isDark ? '#0a84ff' : '#0071e3', borderWidth: 2, tension: 0.3, pointRadius: 0, fill: true, backgroundColor: isDark ? 'rgba(10, 132, 255, 0.05)' : 'rgba(0, 113, 227, 0.02)' },
+                        { label: 'Invested', data: investedData, borderColor: isDark ? '#48484a' : '#d2d2d7', borderWidth: 1, borderDash: [5, 5], pointRadius: 0 }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { position: 'right', grid: { color: isDark ? 'rgba(255,255,255,0.05)' : '#f0f0f2' }, ticks: { color: '#86868b', callback: v => symbol + v.toLocaleString() } },
-                        x: { grid: { display: false }, ticks: { color: '#86868b' } }
+                        y: { position: 'right', grid: { color: isDark ? 'rgba(255,255,255,0.05)' : '#f0f0f2' }, ticks: { color: '#86868b', font: { size: 10 }, callback: v => symbol + v.toLocaleString() } },
+                        x: { grid: { display: false }, ticks: { color: '#86868b', font: { size: 10 }, maxRotation: 0 } }
                     }
                 }
             });
         }
     </script>
+
+        <footer class="py-12 text-center">
+        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">© 2026 RhapsInc.</p>
+    </footer>
+    
 </body>
 </html>
