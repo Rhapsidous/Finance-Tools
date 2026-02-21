@@ -3,312 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RhapsInc. | Networth Projector</title>
+    <title>RhapsInc. | Wealth Projector</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script>tailwind.config = { darkMode: 'class' }</script>
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; }
-        
-        /* Mobile-first Padding: 70px on small screens, 100px on desktop */
-        .content-wrapper { padding-top: 80px; }
-        @media (min-width: 768px) { .content-wrapper { padding-top: 100px; } }
-
-        .apple-card { backdrop-filter: saturate(180%) blur(20px); border-radius: 24px; transition: all 0.3s ease; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; padding-top: 80px; }
+        .light body { background-color: #fbfbfd; color: #1d1d1f; }
+        .dark body { background-color: #000000; color: #ffffff; }
         
         .apple-nav {
             position: fixed; top: 0; left: 0; right: 0; height: 50px;
             backdrop-filter: saturate(180%) blur(20px); z-index: 1000;
-            display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1);
         }
-        .light .apple-nav { background: rgba(255, 255, 255, 0.75); }
-        .dark .apple-nav { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .light .apple-nav { background: rgba(255, 255, 255, 0.8); }
+        .dark .apple-nav { background: rgba(0, 0, 0, 0.8); border-bottom: 1px solid rgba(255,255,255,0.2); }
 
-        .nav-link { font-size: 11px; font-weight: 500; color: #1d1d1f; opacity: 0.8; transition: all 0.2s; }
-        .dark .nav-link { color: #f5f5f7; }
-        .nav-link:hover { opacity: 1; color: #0071e3; }
-
-        .light body { background-color: #fbfbfd; color: #1d1d1f; }
-        .light .apple-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0,0,0,0.05); }
-        .dark body { background-color: #000000; color: #f5f5f7; }
-        .dark .apple-card { background: rgba(28, 28, 30, 0.8); border: 1px solid rgba(255,255,255,0.1); }
+        .apple-card { border-radius: 28px; transition: all 0.3s ease; }
+        .light .apple-card { background: #ffffff; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .dark .apple-card { background: #1c1c1e; border: 1px solid rgba(255,255,255,0.15); }
         
-        input[type="number"] { transition: all 0.2s ease; border: 1px solid transparent; -webkit-appearance: none; }
-        .light input[type="number"] { background-color: #f2f2f7; color: #1d1d1f; }
-        .dark input[type="number"] { 
-            background-color: #1c1c1e; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            color: #ffffff; 
-        }
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #0071e3;
-            background-color: #ffffff !important;
-            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
-        }
-        .dark input[type="number"]:focus {
-            background-color: #2c2c2e !important;
-            border-color: #0a84ff;
-            box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
-        }
+        input { transition: all 0.2s ease; outline: none; }
+        .light input { background-color: #f2f2f7; color: #000; border: 1px solid transparent; }
+        .dark input { background-color: #2c2c2e; color: #ffffff; border: 1px solid rgba(255,255,255,0.2); }
+        input:focus { border-color: #0071e3 !important; }
 
-        .currency-btn, .freq-btn, .stock-btn { transition: all 0.2s ease; color: #86868b; }
-        .light .active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); color: #0071e3 !important; }
-        .dark .active { background: #3a3a3c; color: #0a84ff !important; }
-        
-        input[type="range"] { accent-color: #0071e3; cursor: pointer; }
+        .metric-label { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #86868b; margin-bottom: 4px; }
+        .metric-value { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.05em; }
 
-        /* Chart height optimization for mobile */
-        .chart-container { height: 300px; }
-        @media (min-width: 768px) { .chart-container { height: 450px; } }
+        .pill-btn { font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 8px; transition: all 0.2s; cursor: pointer; }
+        .pill-btn.active { background: #0071e3; color: white; }
+        .pill-btn:not(.active) { color: #86868b; }
+
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #48484a; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #34c759; }
+        input:checked + .slider:before { transform: translateX(20px); }
     </style>
 </head>
-<body class="px-4 pb-12 md:px-12">
+<body class="px-6 pb-12">
 
     <nav class="apple-nav">
-        <div class="max-w-6xl mx-auto w-full px-4 md:px-6 flex justify-between items-center">
-            <div class="flex items-center gap-4 md:gap-10">
-                <span class="text-sm font-bold tracking-tight cursor-default">RhapsInc.</span>
-                <div class="flex gap-4 md:gap-8">
-                    <a href="index.html" class="nav-link uppercase tracking-tighter">Home</a>
-                    <a href="networth.html" class="nav-link uppercase tracking-tighter active text-blue-500">Networth Projector</a>
-                </div>
+        <div class="max-w-7xl mx-auto w-full px-6 flex justify-between items-center">
+            <span class="text-sm font-bold tracking-tighter">RHAPSINC.</span>
+            <div class="flex gap-8">
+                <a href="index.html" class="text-[11px] font-bold uppercase opacity-60">Home</a>
+                <a href="networth.html" class="text-[11px] font-bold uppercase text-blue-500">Networth Projector</a>
+                <a href="explorer.html" class="text-[11px] font-bold uppercase opacity-60 hover:opacity-100">Stock Explorer</a>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="toggleTheme()" class="p-2 opacity-70 hover:opacity-100 transition-opacity">
-                    <span id="themeIcon" class="text-xs">🌙</span>
-                </button>
+            <div class="flex items-center gap-4">
+                <div class="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-lg">
+                    <span id="curGBP" class="pill-btn active" onclick="setCurrency('GBP')">£</span>
+                    <span id="curUSD" class="pill-btn" onclick="setCurrency('USD')">$</span>
+                </div>
+                <button onclick="toggleTheme()" id="themeIcon">🌙</button>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-6xl mx-auto content-wrapper space-y-8 md:space-y-10">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div class="space-y-1">
-                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Networth Projector.</h1>
-                <p class="text-gray-500 text-sm md:text-base font-medium tracking-tight">Financial Modeling Suite</p>
-            </div>
-            
-            <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-xl flex gap-1 self-start md:self-auto scale-90 md:scale-100">
-                <button onclick="updateCurrency('GBP', '£', this)" class="currency-btn active px-4 py-1.5 rounded-lg text-[10px] font-black">GBP</button>
-                <button onclick="updateCurrency('USD', '$', this)" class="currency-btn px-4 py-1.5 rounded-lg text-[10px] font-black">USD</button>
-            </div>
+    <div class="max-w-7xl mx-auto space-y-12">
+        <header class="pt-10">
+            <h1 class="text-4xl font-extrabold tracking-tight mb-2">Wealth Projector.</h1>
+            <p class="text-gray-500 font-medium">Precision wealth modeling for the long term.</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-4 space-y-6">
-                <div class="apple-card p-6 md:p-8 space-y-6">
+                <div class="apple-card p-8 space-y-6">
                     <div>
-                        <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Initial Balance</label>
-                        <input type="number" id="initial" value="10000" class="w-full rounded-2xl p-4 text-lg font-bold outline-none" oninput="calculate()">
+                        <label class="metric-label">Initial Portfolio (<span class="currencyLabel">£</span>)</label>
+                        <input type="number" id="initBalance" value="10000" oninput="updateProjection()" class="w-full rounded-2xl p-4 text-xl font-bold">
                     </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Regular Buy</label>
-                            <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-lg flex gap-1">
-                                <button onclick="updateFreq('monthly', this)" class="freq-btn active px-3 py-1 rounded-md text-[10px] font-bold">Monthly</button>
-                                <button onclick="updateFreq('yearly', this)" class="freq-btn px-3 py-1 rounded-md text-[10px] font-bold">Yearly</button>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="metric-label">Savings (<span class="currencyLabel">£</span>)</label>
+                            <div class="flex bg-gray-100 dark:bg-black p-1 rounded-lg">
+                                <span id="btnMonthly" class="pill-btn active" onclick="setFreq('monthly')">Monthly</span>
+                                <span id="btnYearly" class="pill-btn" onclick="setFreq('yearly')">Yearly</span>
                             </div>
                         </div>
-                        <input type="number" id="contribution" value="1000" class="w-full rounded-2xl p-4 text-lg font-bold outline-none" oninput="calculate()">
+                        <input type="number" id="savingsAmount" value="1000" oninput="updateProjection()" class="w-full rounded-2xl p-4 text-xl font-bold">
                     </div>
-
-                    <div class="pt-2">
-                        <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-2xl flex gap-1">
-                            <button onclick="toggleStock(false, this)" class="stock-btn active flex-1 py-2 rounded-xl text-[10px] md:text-xs font-bold uppercase">Index</button>
-                            <button onclick="toggleStock(true, this)" class="stock-btn flex-1 py-2 rounded-xl text-[10px] md:text-xs font-bold uppercase">Stock</button>
-                        </div>
-                    </div>
-
-                    <div id="stockSection" class="hidden space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 flex justify-between">Div Yield: <span class="text-blue-500 font-bold"><span id="divVal">3.5</span>%</span></label>
-                            <input type="range" id="divYield" min="0" max="12" step="0.1" value="3.5" class="w-full" oninput="calculate()">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-500">Reinvest?</span>
-                            <input type="checkbox" id="dripToggle" checked class="w-5 h-5 accent-blue-600 rounded-lg" onchange="calculate()">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="metric-label">Stock Growth %</label>
+                            <input type="number" id="growthRate" value="7" oninput="updateProjection()" class="w-full rounded-2xl p-4 text-xl font-bold">
                         </div>
                         <div>
-                            <label class="text-[10px] font-black uppercase tracking-widest text-blue-500">Monthly Passive Goal</label>
-                            <input type="number" id="incomeGoal" value="2500" class="w-full rounded-xl p-3 text-sm font-bold outline-none" oninput="calculate()">
+                            <label class="metric-label">Div Yield %</label>
+                            <input type="number" id="divYield" value="3" oninput="updateProjection()" class="w-full rounded-2xl p-4 text-xl font-bold">
                         </div>
                     </div>
-
-                    <div class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                        <div class="flex justify-between items-end">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Price Growth</label>
-                            <span class="text-lg font-bold text-blue-500"><span id="yieldVal">7</span>%</span>
-                        </div>
-                        <input type="range" id="yieldRange" min="0" max="20" step="0.5" value="7" class="w-full" oninput="calculate()">
-                    </div>
-
                     <div>
-                        <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Horizon: <span id="yearValDisplay">30</span> Years</label>
-                        <input type="range" id="years" min="1" max="50" value="30" class="w-full" oninput="calculate()">
+                        <label class="metric-label">Years of Growth</label>
+                        <input type="number" id="years" value="25" oninput="updateProjection()" class="w-full rounded-2xl p-4 text-xl font-bold">
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-4 bg-gray-100 dark:bg-white/5 rounded-2xl">
+                        <div>
+                            <div class="font-bold text-sm">DRIP</div>
+                            <div class="text-[10px] text-gray-500 font-bold uppercase">Reinvest Dividends</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="dripToggle" checked onchange="updateProjection()">
+                            <span class="slider"></span>
+                        </label>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-8 space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                    <div class="apple-card p-6 md:p-8">
-                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ending Balance</span>
-                        <div id="totalDisplay" class="text-3xl md:text-5xl font-bold tracking-tighter mt-1">£0</div>
+                <div class="apple-card p-10">
+                    <div class="flex justify-between items-start mb-10">
+                        <div>
+                            <div class="metric-label">Projected Total Wealth</div>
+                            <div id="finalValue" class="metric-value text-blue-500">£0</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="metric-label">Total Dividends Paid</div>
+                            <div id="totalDivs" class="text-2xl font-bold text-emerald-500">£0</div>
+                        </div>
                     </div>
-                    <div class="apple-card p-6 md:p-8">
-                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Freedom Year</span>
-                        <div id="freedomStatus" class="text-2xl md:text-3xl font-bold tracking-tight mt-1">--</div>
+                    <div class="h-[400px]">
+                        <canvas id="projectionChart"></canvas>
                     </div>
-                </div>
-
-                <div id="dividendDisplay" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                    <div class="apple-card p-6">
-                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Annual Dividends</span>
-                        <div id="finalDiv" class="text-2xl font-bold mt-1">£0</div>
-                    </div>
-                    <div class="apple-card p-6">
-                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Passive</span>
-                        <div id="monthlyDiv" class="text-2xl font-bold mt-1">£0</div>
-                    </div>
-                </div>
-
-                <div class="apple-card p-4 md:p-8 chart-container">
-                    <canvas id="growthChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
+    <footer class="py-20 text-center">
+        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.3em]">© 2026 RhapsInc. Terminal</p>
+    </footer>
+
     <script>
-        (function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') document.documentElement.classList.add('dark');
-        })();
-
-        window.onload = function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') document.getElementById('themeIcon').innerText = '☀️';
-            calculate();
-        };
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            html.classList.toggle('dark');
-            const isDark = html.classList.contains('dark');
-            icon.innerText = isDark ? '☀️' : '🌙';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            calculate(); 
-        }
-
         let chart;
-        let symbol = '£';
         let frequency = 'monthly';
-        let isStockMode = false;
+        let currencySymbol = '£';
 
-        function updateCurrency(code, s, btn) {
-            symbol = s;
-            document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            calculate();
+        function setCurrency(c) {
+            currencySymbol = (c === 'GBP') ? '£' : '$';
+            document.getElementById('curGBP').classList.toggle('active', c === 'GBP');
+            document.getElementById('curUSD').classList.toggle('active', c === 'USD');
+            
+            // Update all small labels in the inputs
+            document.querySelectorAll('.currencyLabel').forEach(el => el.innerText = currencySymbol);
+            
+            updateProjection();
         }
 
-        function updateFreq(f, btn) {
+        function setFreq(f) {
             frequency = f;
-            document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            calculate();
+            document.getElementById('btnMonthly').classList.toggle('active', f === 'monthly');
+            document.getElementById('btnYearly').classList.toggle('active', f === 'yearly');
+            updateProjection();
         }
 
-        function toggleStock(mode, btn) {
-            isStockMode = mode;
-            document.querySelectorAll('.stock-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('stockSection').classList.toggle('hidden', !mode);
-            document.getElementById('dividendDisplay').classList.toggle('hidden', !mode);
-            calculate();
-        }
+        function updateProjection() {
+            const init = parseFloat(document.getElementById('initBalance').value) || 0;
+            const savingsInput = parseFloat(document.getElementById('savingsAmount').value) || 0;
+            const growthRate = (parseFloat(document.getElementById('growthRate').value) || 0) / 100 / 12;
+            const divYield = (parseFloat(document.getElementById('divYield').value) || 0) / 100 / 12;
+            const years = parseInt(document.getElementById('years').value) || 0;
+            const isDRIP = document.getElementById('dripToggle').checked;
 
-        function calculate() {
-            const initial = parseFloat(document.getElementById('initial').value) || 0;
-            const amount = parseFloat(document.getElementById('contribution').value) || 0;
-            const years = parseInt(document.getElementById('years').value);
-            const growthRate = parseFloat(document.getElementById('yieldRange').value) / 100;
-            const divYield = isStockMode ? parseFloat(document.getElementById('divYield').value) / 100 : 0;
-            const incomeGoal = isStockMode ? parseFloat(document.getElementById('incomeGoal').value) : 0;
-            const drip = document.getElementById('dripToggle').checked;
+            const monthlyContribution = frequency === 'monthly' ? savingsInput : savingsInput / 12;
 
-            document.getElementById('divVal').innerText = (divYield * 100).toFixed(1);
-            document.getElementById('yieldVal').innerText = (growthRate * 100).toFixed(1);
-            document.getElementById('yearValDisplay').innerText = years;
+            let balance = init;
+            let totalDivsAccumulated = 0;
+            const labels = [];
+            const data = [];
 
-            let labels = ["Year 0"], data = [initial.toFixed(0)], investedData = [initial.toFixed(0)];
-            let currentBalance = initial, totalInvested = initial, freedomYear = null, lastYearlyDiv = 0;
-
-            for (let i = 1; i <= years; i++) {
-                const iterations = (frequency === 'monthly') ? 12 : 1;
-                const pGrowth = (frequency === 'monthly') ? (growthRate / 12) : growthRate;
-                const pDiv = (frequency === 'monthly') ? (divYield / 12) : divYield;
-                let yearlyDivAccumulator = 0;
-
-                for(let p = 0; p < iterations; p++) {
-                    let earnedDiv = currentBalance * pDiv;
-                    yearlyDivAccumulator += earnedDiv;
-                    currentBalance += amount;
-                    totalInvested += amount;
-                    currentBalance *= (1 + pGrowth);
-                    if (isStockMode && drip) currentBalance += earnedDiv;
+            for (let m = 0; m <= years * 12; m++) {
+                if (m % 12 === 0) {
+                    labels.push('Yr ' + (m / 12));
+                    data.push(Math.round(balance));
                 }
-                lastYearlyDiv = yearlyDivAccumulator;
-                if (isStockMode && (lastYearlyDiv / 12) >= incomeGoal && freedomYear === null) freedomYear = i;
-                labels.push(i);
-                data.push(currentBalance.toFixed(0));
-                investedData.push(totalInvested.toFixed(0));
+                if (m === years * 12) break;
+
+                let monthlyGrowthVal = balance * growthRate;
+                let monthlyDivVal = balance * divYield;
+                totalDivsAccumulated += monthlyDivVal;
+                
+                balance += monthlyGrowthVal;
+                balance += monthlyContribution;
+                if(isDRIP) balance += monthlyDivVal;
             }
 
-            const format = (v) => symbol + Math.floor(v).toLocaleString();
-            document.getElementById('totalDisplay').innerText = format(currentBalance);
-            if (isStockMode) {
-                document.getElementById('finalDiv').innerText = format(lastYearlyDiv);
-                document.getElementById('monthlyDiv').innerText = format(lastYearlyDiv / 12);
-                document.getElementById('freedomStatus').innerText = freedomYear ? "Year " + freedomYear : "Not Met";
-            } else {
-                document.getElementById('freedomStatus').innerText = "--";
-            }
-            renderChart(labels, data, investedData);
+            document.getElementById('finalValue').innerText = currencySymbol + Math.round(balance).toLocaleString();
+            document.getElementById('totalDivs').innerText = currencySymbol + Math.round(totalDivsAccumulated).toLocaleString();
+            renderChart(labels, data);
         }
 
-        function renderChart(labels, data, investedData) {
-            const ctx = document.getElementById('growthChart').getContext('2d');
-            const isDark = document.documentElement.classList.contains('dark');
+        function renderChart(labels, data) {
+            const ctx = document.getElementById('projectionChart').getContext('2d');
             if (chart) chart.destroy();
+            const isDark = document.documentElement.classList.contains('dark');
+            
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [
-                        { label: 'Wealth', data: data, borderColor: isDark ? '#0a84ff' : '#0071e3', borderWidth: 2, tension: 0.3, pointRadius: 0, fill: true, backgroundColor: isDark ? 'rgba(10, 132, 255, 0.05)' : 'rgba(0, 113, 227, 0.02)' },
-                        { label: 'Invested', data: investedData, borderColor: isDark ? '#48484a' : '#d2d2d7', borderWidth: 1, borderDash: [5, 5], pointRadius: 0 }
-                    ]
+                    datasets: [{
+                        data: data,
+                        borderColor: '#0071e3',
+                        borderWidth: 4,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: isDark ? 'rgba(0, 113, 227, 0.2)' : 'rgba(0, 113, 227, 0.05)'
+                    }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return currencySymbol + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
                     scales: {
-                        y: { position: 'right', grid: { color: isDark ? 'rgba(255,255,255,0.05)' : '#f0f0f2' }, ticks: { color: '#86868b', font: { size: 10 }, callback: v => symbol + v.toLocaleString() } },
-                        x: { grid: { display: false }, ticks: { color: '#86868b', font: { size: 10 }, maxRotation: 0 } }
+                        x: { grid: { display: false }, ticks: { color: '#86868b' } },
+                        y: { position: 'right', grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }, ticks: { color: '#86868b' } }
                     }
                 }
             });
         }
-    </script>
 
-        <footer class="py-12 text-center">
-        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">© 2026 RhapsInc.</p>
-    </footer>
-    
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+            document.getElementById('themeIcon').innerText = html.classList.contains('dark') ? '☀️' : '🌙';
+            updateProjection();
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('themeIcon').innerText = '☀️';
+        }
+        updateProjection();
+    </script>
 </body>
 </html>
