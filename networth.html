@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wealth Canvas | Pro Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; padding-top: 64px; }
+        .apple-card { backdrop-filter: saturate(180%) blur(20px); border-radius: 24px; transition: all 0.3s ease; }
+        
+        /* Glassmorphism Navigation */
+        .apple-nav {
+            position: fixed; top: 0; left: 0; right: 0; height: 50px;
+            backdrop-filter: saturate(180%) blur(20px);
+            z-index: 1000; display: flex; align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .light .apple-nav { background: rgba(255, 255, 255, 0.75); }
+        .dark .apple-nav { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+        .nav-link { font-size: 12px; font-weight: 500; color: #1d1d1f; opacity: 0.8; transition: all 0.2s; }
+        .dark .nav-link { color: #f5f5f7; }
+        .nav-link:hover { opacity: 1; color: #0071e3; }
+        .dark .nav-link:hover { color: #0a84ff; }
+
+        .light body { background-color: #fbfbfd; color: #1d1d1f; }
+        .light .apple-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0,0,0,0.05); }
+        .dark body { background-color: #000000; color: #f5f5f7; }
+        .dark .apple-card { background: rgba(28, 28, 30, 0.8); border: 1px solid rgba(255,255,255,0.1); }
+        
+        .currency-btn, .freq-btn, .stock-btn { transition: all 0.2s ease; color: #86868b; }
+        .light .active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); color: #0071e3 !important; }
+        .dark .active { background: #3a3a3c; color: #0a84ff !important; }
+        
+        input[type="range"] { accent-color: #0071e3; cursor: pointer; }
+        .freedom-badge-unified { border-left: 4px solid #0071e3; }
+        .dark .freedom-badge-unified { border-left-color: #0a84ff; }
+    </style>
+</head>
+<body class="p-4 md:p-12">
+
+    <nav class="apple-nav">
+        <div class="max-w-6xl mx-auto w-full px-6 flex justify-between items-center">
+            <div class="flex items-center gap-10">
+                <span class="text-sm font-bold tracking-tight cursor-default">RhapsInc.</span>
+                <div class="flex gap-8">
+                    <a href="index.html" class="nav-link uppercase tracking-tighter">Home</a>
+                    <a href="networth.html" class="nav-link uppercase tracking-tighter">Networth Projector</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="p-2 opacity-70 hover:opacity-100 transition-opacity">
+                    <span id="themeIcon" class="text-xs">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto space-y-10 mt-4">
+        <header class="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="space-y-1 text-center md:text-left">
+                <h1 class="text-4xl font-extrabold tracking-tight">Networth Projector.</h1>
+                <p class="text-gray-500 font-medium tracking-tight">Financial Modeling Suite</p>
+            </div>
+            
+            <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-xl flex gap-1 scale-90">
+                <button onclick="updateCurrency('GBP', '£', this)" class="currency-btn active px-4 py-1.5 rounded-lg text-[10px] font-black">GBP</button>
+                <button onclick="updateCurrency('USD', '$', this)" class="currency-btn px-4 py-1.5 rounded-lg text-[10px] font-black">USD</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-4 space-y-6">
+                <div class="apple-card p-8 space-y-6">
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Initial Balance</label>
+                        <input type="number" id="initial" value="10000" class="w-full bg-gray-100 dark:bg-zinc-900 rounded-2xl p-4 text-lg font-bold outline-none border border-transparent focus:border-blue-500 transition-all" oninput="calculate()">
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Regular Buy</label>
+                            <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-lg flex gap-1">
+                                <button onclick="updateFreq('monthly', this)" class="freq-btn active px-3 py-1 rounded-md text-[10px] font-bold">Monthly</button>
+                                <button onclick="updateFreq('yearly', this)" class="freq-btn px-3 py-1 rounded-md text-[10px] font-bold">Yearly</button>
+                            </div>
+                        </div>
+                        <input type="number" id="contribution" value="1000" class="w-full bg-gray-100 dark:bg-zinc-900 rounded-2xl p-4 text-lg font-bold outline-none border border-transparent focus:border-blue-500 transition-all" oninput="calculate()">
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="bg-gray-200/50 dark:bg-gray-800/50 p-1 rounded-2xl flex gap-1">
+                            <button onclick="toggleStock(false, this)" class="stock-btn active flex-1 py-2 rounded-xl text-xs font-bold uppercase">Index</button>
+                            <button onclick="toggleStock(true, this)" class="stock-btn flex-1 py-2 rounded-xl text-xs font-bold uppercase">Stock</button>
+                        </div>
+                    </div>
+
+                    <div id="stockSection" class="hidden space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 flex justify-between">Div Yield: <span class="text-blue-500 font-bold"><span id="divVal">3.5</span>%</span></label>
+                            <input type="range" id="divYield" min="0" max="12" step="0.1" value="3.5" class="w-full" oninput="calculate()">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-gray-500">Reinvest (DRIP)?</span>
+                            <input type="checkbox" id="dripToggle" checked class="w-5 h-5 accent-blue-600 rounded-lg" onchange="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-blue-500">Monthly Passive Goal</label>
+                            <input type="number" id="incomeGoal" value="2500" class="w-full bg-blue-50/30 dark:bg-blue-900/10 rounded-xl p-3 text-sm font-bold outline-none" oninput="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <div class="flex justify-between items-end">
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-400">Price Growth</label>
+                            <span class="text-lg font-bold text-blue-500"><span id="yieldVal">7</span>%</span>
+                        </div>
+                        <input type="range" id="yieldRange" min="0" max="20" step="0.5" value="7" class="w-full" oninput="calculate()">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Horizon: <span id="yearValDisplay">30</span> Years</label>
+                        <input type="range" id="years" min="1" max="50" value="30" class="w-full" oninput="calculate()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="apple-card p-8">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ending Balance</span>
+                        <div id="totalDisplay" class="text-5xl font-bold tracking-tighter mt-1">£0</div>
+                    </div>
+                    <div class="apple-card p-8 freedom-badge-unified">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Freedom Year</span>
+                        <div id="freedomStatus" class="text-3xl font-bold tracking-tight mt-1">--</div>
+                    </div>
+                </div>
+
+                <div id="dividendDisplay" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="apple-card p-6 border-l-4 border-blue-500">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Annual Dividends</span>
+                        <div id="finalDiv" class="text-3xl font-bold mt-1">£0</div>
+                    </div>
+                    <div class="apple-card p-6 border-l-4 border-emerald-500">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Passive</span>
+                        <div id="monthlyDiv" class="text-3xl font-bold mt-1">£0</div>
+                    </div>
+                </div>
+
+                <div class="apple-card p-8 h-[450px]">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ... (Same verified math logic as previous response) ...
+        let chart;
+        let symbol = '£';
+        let frequency = 'monthly';
+        let isStockMode = false;
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            document.getElementById('themeIcon').innerText = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+            calculate();
+        }
+
+        function updateCurrency(code, s, btn) {
+            symbol = s;
+            document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            calculate();
+        }
+
+        function updateFreq(f, btn) {
+            frequency = f;
+            document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            calculate();
+        }
+
+        function toggleStock(mode, btn) {
+            isStockMode = mode;
+            document.querySelectorAll('.stock-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('stockSection').classList.toggle('hidden', !mode);
+            document.getElementById('dividendDisplay').classList.toggle('hidden', !mode);
+            calculate();
+        }
+
+        function calculate() {
+            const initial = parseFloat(document.getElementById('initial').value) || 0;
+            const amount = parseFloat(document.getElementById('contribution').value) || 0;
+            const years = parseInt(document.getElementById('years').value);
+            const growthRate = parseFloat(document.getElementById('yieldRange').value) / 100;
+            const divYield = isStockMode ? parseFloat(document.getElementById('divYield').value) / 100 : 0;
+            const incomeGoal = isStockMode ? parseFloat(document.getElementById('incomeGoal').value) : 0;
+            const drip = document.getElementById('dripToggle').checked;
+
+            document.getElementById('divVal').innerText = (divYield * 100).toFixed(1);
+            document.getElementById('yieldVal').innerText = (growthRate * 100).toFixed(1);
+            document.getElementById('yearValDisplay').innerText = years;
+
+            let labels = ["Year 0"], data = [initial.toFixed(0)], investedData = [initial.toFixed(0)];
+            let currentBalance = initial, totalInvested = initial, freedomYear = null, lastYearlyDiv = 0;
+
+            for (let i = 1; i <= years; i++) {
+                const iterations = (frequency === 'monthly') ? 12 : 1;
+                const pGrowth = (frequency === 'monthly') ? (growthRate / 12) : growthRate;
+                const pDiv = (frequency === 'monthly') ? (divYield / 12) : divYield;
+                let yearlyDivAccumulator = 0;
+
+                for(let p = 0; p < iterations; p++) {
+                    let earnedDiv = currentBalance * pDiv;
+                    yearlyDivAccumulator += earnedDiv;
+                    currentBalance += amount;
+                    totalInvested += amount;
+                    currentBalance *= (1 + pGrowth);
+                    if (isStockMode && drip) currentBalance += earnedDiv;
+                }
+                lastYearlyDiv = yearlyDivAccumulator;
+                if (isStockMode && (lastYearlyDiv / 12) >= incomeGoal && freedomYear === null) freedomYear = i;
+                labels.push("Year " + i);
+                data.push(currentBalance.toFixed(0));
+                investedData.push(totalInvested.toFixed(0));
+            }
+
+            const format = (v) => symbol + Math.floor(v).toLocaleString();
+            document.getElementById('totalDisplay').innerText = format(currentBalance);
+            if (isStockMode) {
+                document.getElementById('finalDiv').innerText = format(lastYearlyDiv);
+                document.getElementById('monthlyDiv').innerText = format(lastYearlyDiv / 12);
+                document.getElementById('freedomStatus').innerText = freedomYear ? "Year " + freedomYear : "Not Met";
+            } else {
+                document.getElementById('freedomStatus').innerText = "--";
+            }
+            renderChart(labels, data, investedData);
+        }
+
+        function renderChart(labels, data, investedData) {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Wealth', data: data, borderColor: isDark ? '#0a84ff' : '#0071e3', borderWidth: 3, tension: 0.3, pointRadius: 1, fill: true, backgroundColor: isDark ? 'rgba(10, 132, 255, 0.05)' : 'rgba(0, 113, 227, 0.02)' },
+                        { label: 'Invested', data: investedData, borderColor: isDark ? '#48484a' : '#d2d2d7', borderWidth: 2, borderDash: [5, 5], pointRadius: 0 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { position: 'right', grid: { color: isDark ? 'rgba(255,255,255,0.05)' : '#f0f0f2' }, ticks: { color: '#86868b', callback: v => symbol + v.toLocaleString() } },
+                        x: { grid: { display: false }, ticks: { color: '#86868b' } }
+                    }
+                }
+            });
+        }
+        calculate();
+    </script>
+</body>
+</html>
