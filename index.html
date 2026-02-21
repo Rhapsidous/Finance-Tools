@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RhapsInc. | Financial Tools</title>
+    <title>RhapsInc. | Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <script>tailwind.config = { darkMode: 'class' }</script>
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; padding-top: 50px; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* Fixed Apple Nav - Unified */
+        /* Mobile-first Padding Logic - Matches Projector */
+        .content-wrapper { padding-top: 80px; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        @media (min-width: 768px) { .content-wrapper { padding-top: 100px; } }
+
+        /* Navigation - Identical to Projector */
         .apple-nav {
             position: fixed; top: 0; left: 0; right: 0; height: 50px;
             backdrop-filter: saturate(180%) blur(20px); z-index: 1000;
@@ -19,7 +23,7 @@
         .light .apple-nav { background: rgba(255, 255, 255, 0.75); }
         .dark .apple-nav { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.1); }
 
-        .nav-link { font-size: 12px; font-weight: 500; color: #1d1d1f; opacity: 0.6; transition: all 0.2s; }
+        .nav-link { font-size: 11px; font-weight: 500; color: #1d1d1f; opacity: 0.6; transition: all 0.2s; }
         .dark .nav-link { color: #f5f5f7; }
         .nav-link:hover { opacity: 1; color: #0071e3; }
         .active-link { opacity: 1; color: #0071e3 !important; }
@@ -27,8 +31,9 @@
         .light body { background-color: #ffffff; color: #1d1d1f; }
         .dark body { background-color: #000000; color: #f5f5f7; }
 
-        .hero-title { font-size: clamp(3rem, 10vw, 6.5rem); line-height: 1; font-weight: 900; letter-spacing: -0.05em; }
-        .hero-subtitle { font-size: clamp(1.1rem, 2.5vw, 1.5rem); font-weight: 500; color: #86868b; }
+        /* Hero Text */
+        .hero-title { font-size: clamp(2.5rem, 10vw, 6.5rem); line-height: 1; font-weight: 900; letter-spacing: -0.05em; }
+        .hero-subtitle { font-size: clamp(1rem, 2.5vw, 1.5rem); font-weight: 500; color: #86868b; }
         
         .glass-btn {
             background: #0071e3; color: white; padding: 18px 36px;
@@ -37,22 +42,20 @@
             display: inline-block;
         }
         .glass-btn:hover { background: #0077ed; transform: scale(1.03); box-shadow: 0 10px 30px rgba(0,113,227,0.3); }
-
-        main { flex-grow: 1; display: flex; align-items: center; justify-content: center; text-align: center; }
     </style>
 </head>
 <body>
 
     <nav class="apple-nav">
-        <div class="max-w-6xl mx-auto w-full px-6 flex justify-between items-center">
-            <div class="flex items-center gap-10">
+        <div class="max-w-6xl mx-auto w-full px-4 md:px-6 flex justify-between items-center">
+            <div class="flex items-center gap-4 md:gap-10">
                 <span class="text-sm font-bold tracking-tight cursor-default">RhapsInc.</span>
-                <div class="flex gap-8">
+                <div class="flex gap-4 md:gap-8">
                     <a href="index.html" class="nav-link uppercase tracking-tighter active-link">Home</a>
                     <a href="networth.html" class="nav-link uppercase tracking-tighter">Networth Projector</a>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
                 <button onclick="toggleTheme()" class="p-2 opacity-70 hover:opacity-100 transition-opacity">
                     <span id="themeIcon" class="text-xs">🌙</span>
                 </button>
@@ -60,8 +63,8 @@
         </div>
     </nav>
 
-    <main class="px-6">
-        <section class="max-w-4xl mx-auto space-y-10 py-20">
+    <main class="content-wrapper px-6">
+        <section class="max-w-4xl mx-auto space-y-8 md:space-y-10 py-20 text-center">
             <h1 class="hero-title">Engineering<br>Financial Freedom.</h1>
             <p class="hero-subtitle max-w-xl mx-auto leading-relaxed">
                 A canvas for your future. Simple, precise, and built for those who value clarity in their numbers.
@@ -77,24 +80,27 @@
     </footer>
 
     <script>
+        // Identical Theme Persistence Logic
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+        })();
+
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.getElementById('themeIcon').innerText = '☀️';
+            }
+        };
+
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
             html.classList.toggle('dark');
-            icon.innerText = html.classList.contains('dark') ? '☀️' : '🌙';
-            
-            // Optional: Save preference to localStorage so it persists across pages
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+            const isDark = html.classList.contains('dark');
+            icon.innerText = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
-
-        // Apply saved theme on load
-        (function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.getElementById('themeIcon').innerText = '☀️';
-            }
-        })();
     </script>
 </body>
 </html>
