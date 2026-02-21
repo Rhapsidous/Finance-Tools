@@ -1,72 +1,101 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RhapsInc. | Wealth Command</title>
+    <title>RhapsInc. | Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <script>tailwind.config = { darkMode: 'class' }</script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        // Immediate Theme Check to prevent white flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; padding-top: 80px; }
-        .apple-nav {
-            position: fixed; top: 0; left: 0; right: 0; height: 50px;
-            backdrop-filter: saturate(180%) blur(20px); z-index: 1000;
-            display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .light .apple-nav { background: rgba(255, 255, 255, 0.75); }
-        .dark .apple-nav { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; padding-top: 70px; }
         .light body { background-color: #fbfbfd; color: #1d1d1f; }
-        .dark body { background-color: #000000; color: #f5f5f7; }
-        .hero-gradient { background: radial-gradient(circle at center, rgba(0,113,227,0.08) 0%, transparent 70%); }
+        .dark body { background-color: #000000; color: #ffffff; }
+        .apple-nav { position: fixed; top: 0; left: 0; right: 0; min-height: 50px; backdrop-filter: saturate(180%) blur(20px); z-index: 1000; display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding: 0 16px; }
+        .light .apple-nav { background: rgba(255, 255, 255, 0.8); }
+        .dark .apple-nav { background: rgba(0, 0, 0, 0.8); border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .pill-btn { font-size: 10px; font-weight: 800; padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .pill-btn.active { background: #0071e3; color: white; }
     </style>
 </head>
 <body class="px-6">
     <nav class="apple-nav">
-        <div class="max-w-7xl mx-auto w-full px-6 flex justify-between items-center">
-            <span class="text-sm font-bold tracking-tighter">RHAPSINC.</span>
-            <div class="flex gap-8">
-                <a href="index.html" class="text-[11px] font-bold uppercase text-blue-500">Home</a>
-                <a href="networth.html" class="text-[11px] font-bold uppercase opacity-60 hover:opacity-100">Networth Projector</a>
-                <a href="explorer.html" class="text-[11px] font-bold uppercase opacity-60 hover:opacity-100">Stock Explorer</a>
+        <div class="max-w-7xl mx-auto w-full flex justify-between items-center">
+            <span class="text-xs md:text-sm font-bold tracking-tighter">RHAPSINC.</span>
+            <div class="flex gap-6 md:gap-8">
+                <a href="index.html" class="text-[10px] font-bold uppercase text-blue-500">Home</a>
+                <a href="networth.html" class="text-[10px] font-bold uppercase opacity-60 hover:opacity-100 transition">Projector</a>
+                <a href="explorer.html" class="text-[10px] font-bold uppercase opacity-60 hover:opacity-100 transition">Explorer</a>
             </div>
-            <button onclick="toggleTheme()" id="themeIcon">🌙</button>
+            <div class="flex items-center gap-3">
+                <div class="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-lg">
+                    <span id="curGBP" class="pill-btn active">£</span>
+                    <span id="curUSD" class="pill-btn">$</span>
+                </div>
+                <button onclick="toggleTheme()" class="p-2">🌙</button>
+            </div>
         </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto pt-20 pb-32 hero-gradient min-h-screen text-center">
-        <h1 class="text-7xl font-extrabold tracking-tighter mb-6 leading-tight">Your wealth,<br>visualized.</h1>
-        <p class="text-xl text-gray-500 max-w-2xl mx-auto mb-12 font-medium">The ultimate terminal for tracking assets, projecting growth, and exploring the global markets.</p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-            <a href="explorer.html" class="group p-10 rounded-[32px] bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 transition-all hover:scale-[1.02]">
-                <div class="text-blue-500 text-sm font-black uppercase mb-4">Live Market</div>
-                <h3 class="text-3xl font-bold mb-2">Market Explorer</h3>
-                <p class="text-gray-500">Real-time quotes, dividend yields, and technical charts.</p>
-            </a>
-            <a href="networth.html" class="group p-10 rounded-[32px] bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 transition-all hover:scale-[1.02]">
-                <div class="text-emerald-500 text-sm font-black uppercase mb-4">Future Growth</div>
-                <h3 class="text-3xl font-bold mb-2">Growth Projector</h3>
-                <p class="text-gray-500">Calculate long-term compounding and retirement goals.</p>
-            </a>
-        </div>
-    </main>
+    <main class="max-w-4xl mx-auto pt-20 text-center">
+        <section class="space-y-6">
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-none">
+                Wealth, <br><span class="text-blue-600">Projected.</span>
+            </h1>
+            <p class="text-xl text-gray-500 font-medium max-w-2xl mx-auto">
+                The institutional-grade terminal for tracking dividends, exploring assets, and projecting your path to financial freedom.
+            </p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center pt-8">
+                <a href="networth.html" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-blue-500 transition-all">Launch Projector</a>
+                <a href="explorer.html" class="bg-gray-100 dark:bg-zinc-800 px-10 py-4 rounded-2xl font-bold text-lg hover:opacity-80 transition-all">Stock Explorer</a>
+            </div>
+        </section>
 
-    <footer class="py-20 text-center">
-        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.3em]">© 2026 RhapsInc. Terminal</p>
-    </footer>
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 border-t border-gray-100 dark:border-zinc-800 pt-16">
+            <div class="text-left">
+                <h3 class="text-xs font-black uppercase text-blue-500 mb-2">Real-Time</h3>
+                <p class="font-bold text-lg leading-tight">Live market data streaming via institutional APIs.</p>
+            </div>
+            <div class="text-left">
+                <h3 class="text-xs font-black uppercase text-emerald-500 mb-2">Compound</h3>
+                <p class="font-bold text-lg leading-tight">Visualize the snowball effect of dividend reinvestment.</p>
+            </div>
+            <div class="text-left">
+                <h3 class="text-xs font-black uppercase text-purple-500 mb-2">Freedom</h3>
+                <p class="font-bold text-lg leading-tight">Calculate exactly when passive income covers your life.</p>
+            </div>
+        </section>
+    </main>
 
     <script>
         function toggleTheme() {
-            const html = document.documentElement;
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-            document.getElementById('themeIcon').innerText = html.classList.contains('dark') ? '☀️' : '🌙';
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
-        if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.classList.add('dark');
-            document.getElementById('themeIcon').innerText = '☀️';
-        }
+
+        const gbp = document.getElementById('curGBP');
+        const usd = document.getElementById('curUSD');
+        gbp.onclick = () => { gbp.classList.add('active'); usd.classList.remove('active'); };
+        usd.onclick = () => { usd.classList.add('active'); gbp.classList.remove('active'); };
     </script>
+
+        <footer class="max-w-7xl mx-auto px-6 py-12 mt-auto">
+    <div class="border-t border-gray-100 dark:border-zinc-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="text-[11px] font-bold uppercase tracking-widest opacity-40">
+            © 2026 RhapsInc.
+        </div>
+    </div>
+</footer>
 </body>
 </html>
