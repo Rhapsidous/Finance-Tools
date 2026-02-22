@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = { darkMode: 'class' };
-        // Immediate Theme Check
         (function() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -26,13 +25,13 @@
         .apple-nav { position: fixed; top: 0; left: 0; right: 0; min-height: 50px; backdrop-filter: saturate(180%) blur(20px); z-index: 1000; display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding: 0 16px; }
         .light .apple-nav { background: rgba(255, 255, 255, 0.8); }
         .dark .apple-nav { background: rgba(0, 0, 0, 0.8); border-bottom: 1px solid rgba(255,255,255,0.2); }
-        .apple-card { border-radius: 24px; height: 100%; display: flex; flex-direction: column; }
+        .apple-card { border-radius: 24px; display: flex; flex-direction: column; }
         .light .apple-card { background: #ffffff; border: 1px solid rgba(0,0,0,0.05); }
         .dark .apple-card { background: #1c1c1e; border: 1px solid rgba(255,255,255,0.15); }
         .input-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #86868b; letter-spacing: 0.05em; }
         .input-box { background: rgba(134, 134, 139, 0.1); border: none; border-radius: 12px; padding: 10px; font-weight: 700; width: 100%; margin-top: 4px; font-size: 14px; }
         .dark .input-box { background: rgba(255, 255, 255, 0.05); color: white; }
-        .pill-toggle { background: #0071e3; color: white; padding: 6px 16px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; width: 100%; }
+        .pill-toggle { background: #0071e3; color: white; padding: 6px 16px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.2s; }
         .pill-toggle.inactive { background: rgba(134, 134, 139, 0.2); color: #86868b; }
         .pill-btn { font-size: 10px; font-weight: 800; padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .pill-btn.active { background: #0071e3; color: white; }
@@ -44,30 +43,31 @@
         input[type=range]::-webkit-slider-thumb { height: 18px; width: 18px; border-radius: 50%; background: #0071e3; cursor: pointer; -webkit-appearance: none; margin-top: -6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     </style>
 </head>
-<body class="px-6 pb-12">
+<body class="px-6 flex flex-col min-h-screen">
     <nav class="apple-nav">
-        <div class="max-w-7xl mx-auto w-full flex justify-between items-center">
-            <span class="text-xs md:text-sm font-bold tracking-tighter">RHAPSINC.</span>
-            <div class="flex gap-6 md:gap-8">
-                <a href="index.html" class="text-[10px] font-bold uppercase opacity-60 hover:opacity-100 transition">Home</a>
-                <a href="networth.html" class="text-[10px] font-bold uppercase text-blue-500">Projector</a>
-                <a href="explorer.html" class="text-[10px] font-bold uppercase opacity-60 hover:opacity-100 transition">Explorer</a>
+        <div class="max-w-7xl mx-auto w-full flex justify-between items-center px-4">
+            <span class="text-xs font-black tracking-tighter text-blue-500">RHAPSINC.</span>
+            <div class="flex gap-6 md:gap-10">
+                <a href="index.html" class="text-[10px] font-bold uppercase opacity-50 hover:opacity-100 transition">Home</a>
+                <a href="explorer.html" class="text-[10px] font-bold uppercase text-blue-500">Explorer</a>
+                <a href="networth.html" class="text-[10px] font-bold uppercase opacity-50 hover:opacity-100 transition">Projector</a>
+                <a href="ledger.html" class="text-[10px] font-bold uppercase opacity-50 hover:opacity-100 transition">Dividends</a>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-lg">
-                    <span id="curGBP" onclick="setCurrency('GBP')" class="pill-btn active">£</span>
-                    <span id="curUSD" onclick="setCurrency('USD')" class="pill-btn">$</span>
+            <div class="flex items-center gap-4">
+                <div class="flex bg-gray-500/10 p-1 rounded-lg">
+                    <span id="curGBP" onclick="setCurrency('GBP')" class="pill-btn">£</span>
+                    <span id="curUSD" onclick="setCurrency('USD')" class="pill-btn active">$</span>
                 </div>
-                <button onclick="toggleTheme()" class="p-2">🌙</button>
+                <button onclick="toggleTheme()" class="text-lg hover:scale-110 transition">🌓</button>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto pt-6">
+    <main class="max-w-7xl mx-auto pt-6 flex-grow w-full">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-4 apple-card p-8">
                 <h2 class="text-2xl font-black tracking-tight mb-6">Control Center</h2>
-                <div class="space-y-6">
+                <div class="flex flex-col gap-6">
                     <div>
                         <label class="input-label">Principle Balance</label>
                         <input type="number" id="startBal" value="10000" class="input-box" oninput="calculate()">
@@ -86,6 +86,13 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div><label class="input-label">Growth (%)</label><input type="number" id="growthRate" value="7" class="input-box" oninput="calculate()"></div>
                         <div><label class="input-label">Yield (%)</label><input type="number" id="divYield" value="4" class="input-box" oninput="calculate()"></div>
+                    </div>
+                    <div>
+                        <label class="input-label">Reinvest Dividends (DRIP)</label>
+                        <div class="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-xl mt-1">
+                            <button id="dripOn" onclick="setDrip(true)" class="pill-toggle">On</button>
+                            <button id="dripOff" onclick="setDrip(false)" class="pill-toggle inactive">Off</button>
+                        </div>
                     </div>
                     <div>
                         <div class="flex justify-between items-end mb-1">
@@ -128,9 +135,18 @@
         </div>
     </main>
 
+    <footer class="max-w-7xl mx-auto w-full px-6 py-12">
+        <div class="border-t border-gray-100 dark:border-zinc-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-[11px] font-bold uppercase tracking-widest opacity-40">
+                © 2026 RhapsInc.
+            </div>
+        </div>
+    </footer>
+
     <script>
         let chart;
         let frequency = 'M';
+        let dripEnabled = true;
         let currentCurrency = 'GBP';
 
         function toggleTheme() {
@@ -159,6 +175,13 @@
             calculate(); 
         }
 
+        function setDrip(enabled) {
+            dripEnabled = enabled;
+            document.getElementById('dripOn').classList.toggle('inactive', !enabled);
+            document.getElementById('dripOff').classList.toggle('inactive', enabled);
+            calculate();
+        }
+
         function calculate() {
             const start = parseFloat(document.getElementById('startBal').value) || 0;
             const contrib = parseFloat(document.getElementById('contribution').value) || 0;
@@ -184,7 +207,7 @@
                 for (let s = 1; s <= steps; s++) {
                     let dE = currentBalance * sD;
                     if (freedomYear === -1 && (frequency === 'M' ? dE : dE/12) >= targetIncome) freedomYear = y;
-                    currentBalance = (currentBalance + contrib + dE) * (1 + sG);
+                    currentBalance = (currentBalance + contrib + (dripEnabled ? dE : 0)) * (1 + sG);
                     currentContributionTotal += contrib;
                 }
                 labels.push('Y' + y);
@@ -213,13 +236,36 @@
                     labels: labels,
                     datasets: [
                         { label: 'Total Portfolio', data: totalData, borderColor: '#0071e3', borderWidth: 3, pointRadius: 0, fill: true, backgroundColor: isDark ? 'rgba(0, 113, 227, 0.2)' : 'rgba(0, 113, 227, 0.1)', tension: 0.3, z: 2 },
-                        { label: 'Input Amount', data: contribData, borderColor: isDark ? '#3a3a3c' : '#d1d1d6', borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: isDark ? 'rgba(58, 58, 60, 0.8)' : 'rgba(209, 209, 214, 0.8)', tension: 0.3, z: 1 }
+                        { label: 'Your Input', data: contribData, borderColor: isDark ? '#3a3a3c' : '#d1d1d6', borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: isDark ? 'rgba(58, 58, 60, 0.8)' : 'rgba(209, 209, 214, 0.8)', tension: 0.3, z: 1 }
                     ]
                 },
                 options: { 
                     responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } }, 
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: isDark ? '#1c1c1e' : '#ffffff',
+                            titleColor: isDark ? '#ffffff' : '#1d1d1f',
+                            bodyColor: isDark ? '#86868b' : '#424245',
+                            borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            titleFont: { family: 'Inter', weight: 'bold', size: 14 },
+                            bodyFont: { family: 'Inter', weight: '600', size: 12 },
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += fmt(context.parsed.y); }
+                                    return label;
+                                }
+                            }
+                        }
+                    }, 
                     scales: { 
                         y: { position: 'right', grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10, weight: '700' } } }, 
                         x: { grid: { display: false }, ticks: { font: { size: 10, weight: '700' }, maxTicksLimit: 12 } } 
@@ -229,14 +275,5 @@
         }
         calculate();
     </script>
-
-    <footer class="max-w-7xl mx-auto px-6 py-12 mt-auto">
-    <div class="border-t border-gray-100 dark:border-zinc-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="text-[11px] font-bold uppercase tracking-widest opacity-40">
-            © 2026 RhapsInc.
-        </div>
-    </div>
-</footer>
-    
 </body>
 </html>
